@@ -1,3 +1,8 @@
-module github.com/YOUR-USER-OR-ORG-NAME/YOUR-REPO-NAME
+module github.com/artback/networkGamingTest
 
-go 1.14
+go 1.15
+
+require (
+	github.com/ilyakaznacheev/cleanenv v1.2.5
+	github.com/stretchr/testify v1.6.1
+)
