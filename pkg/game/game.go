@@ -8,7 +8,7 @@ import (
 
 type Settings struct {
 	Rounds   int
-	Seed     int64
+	Seed     rand.Source
 	Sleep    time.Duration
 	Interval [2]int
 }
@@ -23,7 +23,7 @@ func (c Settings) Run(resChan chan int, errorChan chan error) {
 		errorChan <- errors.New("interval is undefined")
 		return
 	}
-	r := rand.New(rand.NewSource(c.Seed))
+	r := rand.New(c.Seed)
 	for i := 0; i < c.Rounds; i++ {
 		value := r.Intn(c.Interval[1]) + c.Interval[0]
 		resChan <- value
@@ -32,5 +32,6 @@ func (c Settings) Run(resChan chan int, errorChan chan error) {
 }
 
 func NewGame(rounds int, seed int64, sleep time.Duration, interval [2]int) Settings {
-	return Settings{Rounds: rounds, Seed: seed, Sleep: sleep, Interval: interval}
+	source := rand.NewSource(seed)
+	return Settings{Rounds: rounds, Seed: source, Sleep: sleep, Interval: interval}
 }

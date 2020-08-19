@@ -1,6 +1,6 @@
-package gamehandler
+package scoring
 
-func scoreGuess(actual int, guess [2]int) int {
+func ScoreGuess(actual int, guess [2]int) int {
 	score := 0
 	if actual == guess[0] || actual == guess[1] {
 		score += 5

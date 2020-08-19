@@ -2,13 +2,14 @@ package game
 
 import (
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"testing"
 )
 
 func Test_Run(t *testing.T) {
 	t.Run("seed 5,interval 0,10", func(t *testing.T) {
 		g := Settings{
-			Seed:     5,
+			Seed:     rand.NewSource(5),
 			Sleep:    0,
 			Rounds:   2,
 			Interval: [2]int{0, 10},
@@ -25,7 +26,7 @@ func Test_Run(t *testing.T) {
 	})
 	t.Run("interval error", func(t *testing.T) {
 		g := Settings{
-			Seed:     5,
+			Seed:     rand.NewSource(5),
 			Sleep:    0,
 			Rounds:   2,
 			Interval: [2]int{0, 0},
@@ -39,7 +40,7 @@ func Test_Run(t *testing.T) {
 			actual = append(actual, result)
 		}
 		var expected []int
-		require.Errorf(t, err, "interval is undefined")
+		require.EqualError(t, err, "interval is undefined")
 		require.Equal(t, expected, actual)
 	})
 }

@@ -1,7 +1,6 @@
 package scoreboard
 
 import (
-	"github.com/artback/networkGamingTest/pkg/gamehandler"
 	"github.com/umpc/go-sortedmap"
 	"github.com/umpc/go-sortedmap/asc"
 )
@@ -11,13 +10,13 @@ type Scoreboard struct {
 }
 
 func NewScoreBoard(size int) *Scoreboard {
-	sortedmap := sortedmap.New(size, asc.Int)
-	return &Scoreboard{sortedmap}
+	m := sortedmap.New(size, asc.Int)
+	return &Scoreboard{m}
 }
 
 //Adds or create a new score for player
-func (s *Scoreboard) AddScore(score int, player gamehandler.Player) {
-	s.addScore(score, player.Name)
+func (s *Scoreboard) AddScore(score int, player string) {
+	s.addScore(score, player)
 }
 func (s *Scoreboard) addScore(score int, name string) {
 	currI, has := s.sortedMap.Get(name)
@@ -30,8 +29,8 @@ func (s *Scoreboard) addScore(score int, name string) {
 		s.sortedMap.Replace(name, score)
 	}
 }
-func (s *Scoreboard) Get(player gamehandler.Player) (int, bool) {
-	sI, _ := s.sortedMap.Get(player.Name)
+func (s *Scoreboard) Get(player string) (int, bool) {
+	sI, _ := s.sortedMap.Get(player)
 	score, ok := sI.(int)
 	return score, ok
 }
@@ -44,4 +43,15 @@ func (s *Scoreboard) Join(s2 *Scoreboard) {
 			s.addScore(score, name)
 		}
 	}
+}
+func (s *Scoreboard) Map() map[string]int {
+	convertedMap := make(map[string]int)
+	for key, value := range s.sortedMap.Map() {
+		k, kOk := key.(string)
+		v, vOk := value.(int)
+		if kOk && vOk {
+			convertedMap[k] = v
+		}
+	}
+	return convertedMap
 }
