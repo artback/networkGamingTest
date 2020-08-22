@@ -1,6 +1,8 @@
 package jsonwriter
 
-import "io"
+import (
+	"time"
+)
 
 type Mock struct {
 	Err error
@@ -19,9 +21,9 @@ func (j Mock) Close() error {
 	return nil
 }
 
-func (j Mock) NextReader() (messageType int, r io.Reader, err error) {
+func (j Mock) WriteControl(_ int, _ []byte, _ time.Time) error {
 	if j.Err != nil {
-		return 0, nil, j.Err
+		return j.Err
 	}
-	return 0, nil, nil
+	return nil
 }

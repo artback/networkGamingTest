@@ -7,15 +7,12 @@ import Button from "@material-ui/core/Button";
 
 function Join({ config, onJoin, game, setGame }) {
   const { guess1, guess2, name, isPlayer } = game;
-  const style = {
+  const center = {
     border: "4px solid rgb(0, 94, 156)",
     borderRadius: "10px",
     width: "650px",
     height: "650px",
     margin: "0 auto",
-  };
-  const center = {
-    ...style,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

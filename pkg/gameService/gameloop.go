@@ -17,37 +17,39 @@ func GameLoop(gs *GameService, c config.Configuration, seed int64) {
 	for {
 		time.Sleep(sleep)
 		if c.MinimumPlayer <= len(gs.players) {
+			log.Print("New game started with ", len(gs.players), " players")
 			board, err := gs.startGame(c, seed)
 			if err != nil {
-				log.Print(err)
+				log.Print("StartGame", err)
 			}
+			log.Print("Game ended without errors, winner: ", board.Winner())
 			gs.total = scoreboard.Join(gs.total, *board)
 			for _, p := range gs.players {
 				err := p.WriteMessage("board", board)
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", p.Name, " ", err)
 				}
 				err = p.WriteMessage("total", gs.total)
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", p.Name, " ", err)
 				}
 				err = p.WriteMessage("winner", board.Winner())
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", p.Name, " ", err)
 				}
 			}
 			for _, o := range gs.observers {
 				err := o.WriteMessage("board", board)
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", o.Name, " ", err)
 				}
 				err = o.WriteMessage("total", gs.total)
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", o.Name, " ", err)
 				}
 				err = o.WriteMessage("winner", board.Winner())
 				if err != nil {
-					log.Print(err)
+					log.Print("Error writing to ", o.Name, " ", err)
 				}
 			}
 			gs.Clean()

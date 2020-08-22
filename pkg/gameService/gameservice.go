@@ -6,7 +6,6 @@ import (
 	"github.com/artback/networkGamingTest/pkg/game"
 	"github.com/artback/networkGamingTest/pkg/player"
 	"github.com/artback/networkGamingTest/pkg/scoreboard"
-	"log"
 	"time"
 )
 
@@ -49,7 +48,10 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 			if !ok {
 				resChan = nil
 			}
-			gs.addToScoreBoard(result, board)
+			err := gs.addToScoreBoard(result, board)
+			if err != nil {
+				return board, err
+			}
 		case err := <-errChan:
 			return board, err
 		}
@@ -59,16 +61,16 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 func (gs *GameService) addToScoreBoard(result int, scoreboard *scoreboard.Scoreboard) error {
 	if scoreboard != nil {
 		for _, p := range gs.players {
-			scoreboard.AddResult(result,p)
-			err := p.WriteMessage("result", scoreboard)
-			if err != nil {
-				log.Print(err)
+			if err := scoreboard.AddResult(result, p); err != nil {
+				return err
+			}
+			if err := p.WriteMessage("result", scoreboard); err != nil {
+				return err
 			}
 		}
 		for _, o := range gs.observers {
-			err := o.WriteMessage("result", scoreboard)
-			if err != nil {
-				log.Print(err)
+			if err := o.WriteMessage("result", scoreboard); err != nil {
+				return err
 			}
 		}
 	}

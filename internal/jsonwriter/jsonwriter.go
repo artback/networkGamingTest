@@ -1,9 +1,9 @@
 package jsonwriter
 
-import "io"
+import "time"
 
 type JsonWriter interface {
 	WriteJSON(v interface{}) error
+	WriteControl(messageType int, data []byte, deadline time.Time) error
 	Close() error
-	NextReader() (messageType int, r io.Reader, err error)
 }

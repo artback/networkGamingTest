@@ -20,15 +20,15 @@ func (co *Configuration) Init() error {
 	return cleanenv.ReadEnv(co)
 }
 
-func NewConfig() *Configuration {
+func NewConfig() (*Configuration, error) {
 	conf := &Configuration{}
-	conf.Init()
-	return conf
+	err := conf.Init()
+	return conf, err
 }
 
 func (co *Configuration) ApiConfig(w http.ResponseWriter, _ *http.Request) {
 	_, err := webservice.RespondWithJSON(w, http.StatusOK, co)
 	if err != nil {
-		log.Print(err)
+		log.Print("Config ", err)
 	}
 }

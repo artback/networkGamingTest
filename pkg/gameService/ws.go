@@ -25,7 +25,7 @@ func (gs *GameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
 	if len(name) == 0 {
 		_, err := webservice.RespondWithError(w, r, http.StatusBadRequest, "name required")
 		if err != nil {
-			log.Print(err)
+			log.Print("ApiGameWS ", err)
 		}
 		return
 	}
@@ -36,18 +36,23 @@ func (gs *GameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
 	}
 	// Something along these lines to upgrade to a Websocket
 	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil && ws != nil {
-		err := ws.WriteJSON(socketMessage.SocketMessage{Type: "error", Payload: "'upgrade' token not found in 'Connection' header"})
+	if ws != nil {
 		if err != nil {
-			log.Print(err)
+			err := ws.WriteJSON(socketMessage.SocketMessage{Type: "error", Payload: "'upgrade' token not found in 'Connection' header"})
+			if err != nil {
+				log.Print("ApiGameWS websocket", err)
+			}
+			err = ws.Close()
+			if err != nil {
+				log.Print("ApiGameWS websocket ", err)
+			}
+			return
 		}
-		err = ws.Close()
+		err = ws.WriteJSON(socketMessage.SocketMessage{Type: "total", Payload: gs.total})
 		if err != nil {
-			log.Print(err)
+			log.Print("ApiGameWS websocket ", err)
 		}
-		return
 	}
-	ws.WriteJSON(socketMessage.SocketMessage{Type: "total", Payload: gs.total})
 	gs.Join(name, ws, guess)
 
 }

@@ -10,9 +10,10 @@ func TestGameService_PingPlayers(t *testing.T) {
 		gs := &GameService{}
 		gs.PingPlayers()
 	})
-	t.Run("nil players and observers", func(t *testing.T) {
+	t.Run("One player and One observers", func(t *testing.T) {
 		gs := NewGameService()
 		gs.join(player.NewPlayer("ola", nil, nil))
+		gs.join(player.NewPlayer("ola", nil, &[2]int{1, 5}))
 		gs.PingPlayers()
 	})
 }

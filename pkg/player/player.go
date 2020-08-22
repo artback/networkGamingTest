@@ -1,8 +1,11 @@
 package player
 
 import (
+	"errors"
 	"github.com/artback/networkGamingTest/internal/jsonwriter"
 )
+
+var WebSocketNilError = errors.New("websocket is nil")
 
 type Player struct {
 	Name  string

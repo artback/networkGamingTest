@@ -1,16 +1,21 @@
 package player
 
 import (
-	"errors"
+	"github.com/gorilla/websocket"
+	"time"
 )
 
 func (p *Player) Ping() error {
 	if p.ws != nil {
-		if _, _, err := p.ws.NextReader(); err != nil {
+		if err := p.ws.WriteControl(
+			websocket.PingMessage,
+			[]byte{},
+			time.Now().Add(10*time.Millisecond),
+		); err != nil {
 			return err
 		}
 	} else {
-		return errors.New("websocket is nil")
+		return WebSocketNilError
 	}
 	return nil
 }
