@@ -52,6 +52,6 @@ func GameLoop(gs *GameService, c config.Configuration, seed int64) {
 			}
 			gs.Clean()
 		}
-		go gs.PingPlayers()
+		gs.PingPlayers()
 	}
 }
