@@ -3,6 +3,10 @@
 Simulate a betting game where users can play or observe a game.
 
 
+Game is run on port 3000 
+
+
+
 
 The game is configurable at start using enviorments varaibles
 The variables are:

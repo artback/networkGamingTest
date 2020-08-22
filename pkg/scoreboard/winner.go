@@ -1,19 +1,11 @@
 package scoreboard
 
-type Result struct {
-	Name  string `json:"name"`
-	Score int    `json:"score"`
-}
-
 func (s *Scoreboard) Winner() *Result {
-	var winner Result
-	for player, score := range *s {
-		if score > winner.Score {
-			winner = Result{Name: player, Score: score}
+	var winner *Result
+	for _, result := range *s {
+		if winner == nil || result.Score > winner.Score {
+			winner = result
 		}
 	}
-	if winner == (Result{}) {
-		return nil
-	}
-	return &winner
+	return winner
 }

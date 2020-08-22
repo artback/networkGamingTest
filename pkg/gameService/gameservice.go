@@ -42,11 +42,11 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 	resChan := make(chan int)
 	errChan := make(chan error)
 	go g.Run(resChan, errChan)
-	for resChan != nil {
+	for {
 		select {
 		case result, ok := <-resChan:
 			if !ok {
-				resChan = nil
+				return board, nil
 			}
 			err := gs.addToScoreBoard(result, board)
 			if err != nil {

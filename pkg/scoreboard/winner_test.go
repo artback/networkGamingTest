@@ -7,7 +7,10 @@ import (
 
 func TestScoreboard_Winner(t *testing.T) {
 	t.Run("get winner", func(t *testing.T) {
-		s := Scoreboard{"ola": 5, "per": 1, "sven": 3}
+		s := Scoreboard{
+			"ola":  &Result{Name: "ola", Score: 5},
+			"per":  &Result{Name: "per", Score: 1},
+			"sven": &Result{Name: "sven", Score: 5}}
 		winner := s.Winner()
 		require.Equal(t, &Result{Name: "ola", Score: 5}, winner)
 	})

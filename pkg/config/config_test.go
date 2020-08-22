@@ -7,7 +7,7 @@ import (
 
 func TestNewConfig(t *testing.T) {
 	t.Run("default configuration ", func(t *testing.T) {
-		c := NewConfig()
+		c, err := NewConfig()
 		expected := Configuration{
 			Rounds:        10,
 			Sleep:         "1s",
@@ -16,6 +16,10 @@ func TestNewConfig(t *testing.T) {
 			EndInterval:   10,
 			MinimumPlayer: 2,
 		}
-		require.Equal(t, expected, *c)
+		require.NotNil(t, c)
+		if c != nil {
+			require.Equal(t, expected, *c)
+			require.Nil(t, err)
+		}
 	})
 }

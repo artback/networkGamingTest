@@ -3,7 +3,6 @@ package gameService
 import (
 	"github.com/artback/networkGamingTest/internal/jsonwriter"
 	"github.com/artback/networkGamingTest/pkg/config"
-	"github.com/artback/networkGamingTest/pkg/scoreboard"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -30,6 +29,8 @@ func Test_gameService_startGame(t *testing.T) {
 		g.Join("per", mock, &[2]int{2, 3})
 		res, err := g.startGame(c, 1)
 		require.Nil(t, err)
-		require.Equal(t, scoreboard.Scoreboard{"ola": 0, "per": -1}, *res)
+		ret := *res
+		require.Equal(t, -1, ret["per"].Score)
+		require.Equal(t, 0, ret["ola"].Score)
 	})
 }
