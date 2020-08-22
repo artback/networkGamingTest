@@ -2,69 +2,39 @@ package gameService
 
 import (
 	"errors"
-	"github.com/artback/networkGamingTest/internal/jsonwriter"
 	"github.com/artback/networkGamingTest/pkg/config"
 	"github.com/artback/networkGamingTest/pkg/game"
 	"github.com/artback/networkGamingTest/pkg/player"
 	"github.com/artback/networkGamingTest/pkg/scoreboard"
+	"log"
 	"time"
 )
 
 var ParseDurationError = errors.New("couldn't parse duration string")
 
-type gameService struct {
-	players   []player.Player
-	observers []player.Player
+type GameService struct {
+	players   map[string]player.Player
+	observers map[string]player.Player
 	scoreboard.Scoreboard
+	total   scoreboard.Scoreboard
 	started bool
 }
 
-func NewGameService() *gameService {
-	return &gameService{}
-}
-
-// Runs the game in a loop that sleeps for time set by SleepBetween from Configuration
-// cleans the players after game and and move the observers as players for the next game
-func (gs *gameService) GameLoop(c config.GameConfiguration, seed int64, total *scoreboard.Scoreboard) (*scoreboard.Scoreboard, error) {
-	sleep, err := time.ParseDuration(c.SleepBetween)
-	if err != nil {
-		return nil, ParseDurationError
-	}
-	for {
-		time.Sleep(sleep)
-		if c.MinimumPlayer >= len(gs.players) {
-			board, err := gs.startGame(c, seed)
-			if err != nil {
-				return board, err
-			}
-			total.Join(board)
-			for _, p := range gs.players {
-				err = p.Jw.Close()
-				if err != nil {
-					return nil, err
-				}
-			}
-			gs.resetGameService()
-
-		}
-	}
-}
-func (gs *gameService) resetGameService() {
-	observers := gs.observers
-	g := new(gameService)
-	for _, o := range observers {
-		g.join(o)
+func NewGameService() *GameService {
+	return &GameService{
+		players:   map[string]player.Player{},
+		observers: map[string]player.Player{},
 	}
 }
 
 // Runs one game , keeps track of score and sends updates to players
-func (gs *gameService) startGame(c config.GameConfiguration, seed int64) (*scoreboard.Scoreboard, error) {
+func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboard.Scoreboard, error) {
 	gs.started = true
 	defer func() {
 		gs.started = false
 	}()
 
-	board := scoreboard.NewScoreBoard(len(gs.players))
+	board := &scoreboard.Scoreboard{}
 	sleep, err := time.ParseDuration(c.Sleep)
 	if err != nil {
 		return board, ParseDurationError
@@ -73,35 +43,34 @@ func (gs *gameService) startGame(c config.GameConfiguration, seed int64) (*score
 	resChan := make(chan int)
 	errChan := make(chan error)
 	go g.Run(resChan, errChan)
-	for {
+	for resChan != nil {
 		select {
 		case result, ok := <-resChan:
 			if !ok {
-				return board, nil
+				resChan = nil
 			}
 			gs.addToScoreBoard(result, board)
 		case err := <-errChan:
 			return board, err
 		}
 	}
+	return board, nil
 }
-func (gs *gameService) addToScoreBoard(result int, scoreboard *scoreboard.Scoreboard) {
-	for _, p := range append(gs.players, gs.observers...) {
-		p.AddScore(result, scoreboard)
+func (gs *GameService) addToScoreBoard(result int, scoreboard *scoreboard.Scoreboard) error {
+	if scoreboard != nil {
+		for _, p := range gs.players {
+			scoreboard.AddResult(result,p)
+			err := p.WriteMessage("result", scoreboard)
+			if err != nil {
+				log.Print(err)
+			}
+		}
+		for _, o := range gs.observers {
+			err := o.WriteMessage("result", scoreboard)
+			if err != nil {
+				log.Print(err)
+			}
+		}
 	}
-}
-
-// Method for joining game. Will place user in players if no game is currently active.
-// If no game is active user will join player and if guess is zero
-//or game already started user joins observers
-func (gs *gameService) Join(name string, ws jsonwriter.JsonWriter, guess [2]int) {
-	p := player.NewPlayer(name, ws, guess)
-	gs.join(p)
-}
-func (gs *gameService) join(p player.Player) {
-	if !gs.started && p.Guess[0] >= 0 && p.Guess[1] > 0 {
-		gs.players = append(gs.players, p)
-	} else {
-		gs.observers = append(gs.observers, p)
-	}
+	return nil
 }

@@ -8,15 +8,14 @@ import (
 func TestNewConfig(t *testing.T) {
 	t.Run("default configuration ", func(t *testing.T) {
 		c := NewConfig()
-		cg := c.Game
-		expected := GameConfiguration{
-			Rounds:        1,
+		expected := Configuration{
+			Rounds:        10,
 			Sleep:         "1s",
 			SleepBetween:  "10s",
 			BeginInterval: 0,
 			EndInterval:   10,
 			MinimumPlayer: 2,
 		}
-		require.Equal(t, expected, cg)
+		require.Equal(t, expected, *c)
 	})
 }

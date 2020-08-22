@@ -6,10 +6,10 @@ import (
 
 type Player struct {
 	Name  string
-	Jw    jsonwriter.JsonWriter
-	Guess [2]int
+	ws    jsonwriter.JsonWriter
+	Guess *[2]int
 }
 
-func NewPlayer(name string, jw jsonwriter.JsonWriter, guess [2]int) Player {
-	return Player{Name: name, Jw: jw, Guess: guess}
+func NewPlayer(name string, ws jsonwriter.JsonWriter, guess *[2]int) Player {
+	return Player{Name: name, ws: ws, Guess: guess}
 }

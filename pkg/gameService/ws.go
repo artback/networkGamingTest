@@ -1,14 +1,34 @@
 package gameService
 
 import (
+	"github.com/artback/networkGamingTest/internal/socketMessage"
 	"github.com/artback/networkGamingTest/pkg/util/webservice"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 // This method contains everything necessary to join a game and setup a websocket connection
-func (gs *gameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
+func (gs *GameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
+	qGuess := r.URL.Query()["guess"]
+	var guess *[2]int
+	if len(qGuess) > 0 {
+		g1, err := strconv.Atoi(qGuess[0])
+		g2, err := strconv.Atoi(qGuess[1])
+		if err == nil {
+			guess = &[2]int{g1, g2}
+		}
+	}
+
+	name := r.URL.Query().Get("name")
+	if len(name) == 0 {
+		_, err := webservice.RespondWithError(w, r, http.StatusBadRequest, "name required")
+		if err != nil {
+			log.Print(err)
+		}
+		return
+	}
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -16,21 +36,18 @@ func (gs *gameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
 	}
 	// Something along these lines to upgrade to a Websocket
 	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		webservice.RespondWithError(w, r, http.StatusBadRequest, "'upgrade' token not found in 'Connection' header")
+	if err != nil && ws != nil {
+		err := ws.WriteJSON(socketMessage.SocketMessage{Type: "error", Payload: "'upgrade' token not found in 'Connection' header"})
+		if err != nil {
+			log.Print(err)
+		}
+		err = ws.Close()
+		if err != nil {
+			log.Print(err)
+		}
 		return
 	}
-
-	qGuess := r.URL.Query()["guess"]
-	var guess [2]int
-	guess[0], _ = strconv.Atoi(qGuess[0])
-	guess[1], _ = strconv.Atoi(qGuess[1])
-
-	name := r.URL.Query().Get("name")
-	if len(name) == 0 {
-		webservice.RespondWithError(w, r, http.StatusBadRequest, "name required")
-		return
-	}
-
+	ws.WriteJSON(socketMessage.SocketMessage{Type: "total", Payload: gs.total})
 	gs.Join(name, ws, guess)
+
 }
