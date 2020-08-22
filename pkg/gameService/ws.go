@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
@@ -20,6 +21,9 @@ func (gs *GameService) ApiGameWs(w http.ResponseWriter, r *http.Request) {
 			guess = &[2]int{g1, g2}
 		}
 	}
+	sort.Slice(guess, func(i, j int) bool {
+		return guess[i] > guess[j]
+	})
 
 	name := r.URL.Query().Get("name")
 	if len(name) == 0 {
