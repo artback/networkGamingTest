@@ -9,7 +9,7 @@ func TestNewConfig(t *testing.T) {
 	t.Run("default configuration ", func(t *testing.T) {
 		c, err := NewConfig()
 		expected := Configuration{
-			Rounds:        10,
+			Rounds:        30,
 			Sleep:         "1s",
 			SleepBetween:  "10s",
 			BeginInterval: 0,

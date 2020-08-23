@@ -3,6 +3,7 @@ import Join from "../Join";
 import Board from "../Board";
 import Header from "../Header";
 import "./Game.css";
+import Winner from "../winner";
 const { host } = window.location;
 const protocolPrefix = window.location.protocol === "https:" ? "wss:" : "ws:";
 function Game() {
@@ -15,6 +16,7 @@ function Game() {
     }
   });
   const [config, setConfig] = React.useState();
+  const [winner,setWinner] = React.useState()
   const [game, setGame] = React.useState({
     name: "",
     guess1: 0,
@@ -45,6 +47,7 @@ function Game() {
         setScoreBoard(payload);
         break;
       case "winner":
+        setWinner(payload);
         setIsJoined(false);
         setScoreBoard(undefined);
         break;
@@ -52,7 +55,7 @@ function Game() {
         console.error(data);
         break;
       default:
-      //console.log(data);
+      console.log(data);
     }
   };
   const onclose = () => {
@@ -70,6 +73,7 @@ function Game() {
         )}
         <Board scoreBoard={total} title="total" />
       </div>
+      {winner &&<Winner winner={winner}></Winner>}
     </div>
   );
 }

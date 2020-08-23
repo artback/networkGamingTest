@@ -6,8 +6,6 @@ import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 
 function Board({ scoreBoard, title }) {
   const style = {
@@ -16,19 +14,23 @@ function Board({ scoreBoard, title }) {
     width: "650px",
     height: "650px",
     margin: "0 auto",
+  };
+  const center = {
+    ...style,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   };
-  const center = {
-    ...style,
-  };
 
-  const sortScoreAsc = (a, b) => b[1] - a[1];
+  const sortScoreAsc = (a, b) => b[1].score - a[1].score;
   return scoreBoard ? (
     <TableContainer style={style} component={Paper}>
-      <Table aria-label="simple table">
+      <Table stickyHeader aria-label="simple table">
         <TableHead>
+          <TableRow>
+            <TableCell><b>{title}</b></TableCell>
+            <TableCell></TableCell>
+          </TableRow>
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell align="right">Score</TableCell>

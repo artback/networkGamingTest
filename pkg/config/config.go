@@ -8,7 +8,7 @@ import (
 )
 
 type Configuration struct {
-	Rounds        int    ` env:"GAME_ROUNDS" env-default:"10" json:"rounds"`
+	Rounds        int    ` env:"GAME_ROUNDS" env-default:"30" json:"rounds"`
 	Sleep         string `env:"GAME_SLEEP_TIME" env-default:"1s" json:"sleep"`
 	SleepBetween  string `env:"GAME_BETWEEN_SLEEP_TIME" env-default:"10s" json:"sleep_between"`
 	MinimumPlayer int    `env:"GAME_MINIMUM_PLAYERS" env-default:"2" json:"minimum_player"`

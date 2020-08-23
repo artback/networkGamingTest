@@ -6,7 +6,6 @@ import Switch from "@material-ui/core/Switch";
 import Button from "@material-ui/core/Button";
 
 function Join({ config, onJoin, game, setGame }) {
-  const { guess1, guess2, name, isPlayer } = game;
   const center = {
     border: "4px solid rgb(0, 94, 156)",
     borderRadius: "10px",
@@ -18,7 +17,7 @@ function Join({ config, onJoin, game, setGame }) {
     justifyContent: "center",
   };
   const handleSwitch = () => {
-    setGame({ ...game, isPlayer: !isPlayer });
+    setGame({ ...game, isPlayer: !game.isPlayer });
   };
   const setGameFields = (event, field) =>
     setGame({ ...game, [field]: event.target.value });
@@ -26,8 +25,10 @@ function Join({ config, onJoin, game, setGame }) {
     const nOk = name !== undefined && name !== "";
 
     const guessOk = (guess) =>
-      guess && guess <= config.end_interval && config.begin_interval <= guess;
-    return nOk && (isPlayer ? guessOk(guess1) && guessOk(guess2) : true);
+      guess !== undefined &&
+      guess <= config.end_interval &&
+      config.begin_interval <= guess;
+    return nOk && (game.isPlayer ? guessOk(guess1) && guessOk(guess2) : true);
   };
   return (
     <div style={center}>
@@ -36,26 +37,26 @@ function Join({ config, onJoin, game, setGame }) {
           <TextField
             id="my-input"
             label="Name"
-            value={name}
+            value={game.name}
             onChange={(event) => setGameFields(event, "name")}
           />
           <FormControlLabel
             control={
               <Switch
-                checked={isPlayer}
+                value={game.isPlayer}
                 onChange={handleSwitch}
                 name="player"
               />
             }
-            label={isPlayer ? "Player" : "Observer"}
+            label={game.isPlayer ? "Player" : "Observer"}
           />
-          {isPlayer && (
+          {game.isPlayer && (
             <>
               <TextField
                 id="standard-number"
                 label="Guess 1"
                 type="number"
-                value={guess1}
+                value={game.guess1}
                 InputProps={{
                   inputProps: {
                     min: config.begin_interval,
@@ -72,7 +73,7 @@ function Join({ config, onJoin, game, setGame }) {
                 label="Guess 2"
                 type="number"
                 onChange={(event) => setGameFields(event, "guess2")}
-                value={guess2}
+                value={game.guess2}
                 InputProps={{
                   inputProps: {
                     min: config.begin_interval,
