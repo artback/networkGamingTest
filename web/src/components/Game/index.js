@@ -73,7 +73,7 @@ function Game() {
         )}
         <Board scoreBoard={total} title="total" />
       </div>
-      {winner &&<Winner winner={winner}></Winner>}
+      {winner &&<Winner winner={winner}/>}
     </div>
   );
 }

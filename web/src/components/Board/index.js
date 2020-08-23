@@ -29,7 +29,7 @@ function Board({ scoreBoard, title }) {
         <TableHead>
           <TableRow>
             <TableCell><b>{title}</b></TableCell>
-            <TableCell></TableCell>
+            <TableCell/>
           </TableRow>
           <TableRow>
             <TableCell>Name</TableCell>
