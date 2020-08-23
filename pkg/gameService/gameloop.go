@@ -22,7 +22,7 @@ func GameLoop(gs *GameService, c config.Configuration, seed int64) {
 			if err != nil {
 				log.Print("StartGame", err)
 			}
-			log.Print("Game ended without errors, winner: ", board.Winner())
+			log.Print("Game ended without errors, winner: ", board.Winner().Name)
 			gs.total = scoreboard.Join(gs.total, *board)
 			for _, p := range gs.players {
 				err := p.WriteMessage("board", board)
