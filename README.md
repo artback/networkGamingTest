@@ -2,8 +2,7 @@
 
 Simulate a betting game where users can play or observe a game.
 
-
-to start game run "docker-compose up" in main folder
+To start game run "docker-compose up" in main folder
 visit localhost:3000 in your browser
 
 How to start a game:
@@ -42,8 +41,12 @@ Testing:
  The frontend components styling is tested using storybook, run command npm run storybook in the web folder.
 
 #TODO:
-  Two player with the same name could potentialy join the same game and there scores would be joined on the scoreboard.
+  1.Two player with the same name could potentialy join the same game and there scores would be joined on the scoreboard.
   it is unneccesary an observer have to input a name before being able to view games.
-  The way of handling if a user has reached score 21 is a bit embarrasing and hard to grasp. 
+
+  2. The way of handling if a user has reached score 21 is a bit embarrasing and hard to grasp. 
+
+  3. The game(name and guess) could be sent as a message through the websocket rather than at the setup of the game. 
+     That way the websocket wouldn't need to be close to run a new game with new guess. 
 
 
