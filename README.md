@@ -3,6 +3,7 @@
 Simulate a betting game where users can play or observe a game.
 
 To start game run "docker-compose up" in main folder
+
 visit localhost:3000 in your browser
 
 How to start a game:
@@ -27,7 +28,9 @@ Backend Packages:
 
 
 The game is configurable at start using enviorments varaibles
+
 The variables are:
+
 - Rounds int ( Set the number of rounds on each game)
 - Sleep time.Duration('example: 1s')  ( Set the sleep time between each new draw in a game)
 - SleepBetween  time.Duration('example: 1s')   ( Set the sleep time between each game)
@@ -37,12 +40,15 @@ The variables are:
 
 
 Testing:
+
  The backend test can be run with go test ./...
+
  The frontend components styling is tested using storybook, run command npm run storybook in the web folder.
 
-#TODO:
-  1.Two player with the same name could potentialy join the same game and there scores would be joined on the scoreboard.
-  it is unneccesary an observer have to input a name before being able to view games.
+
+# TODO
+
+  1. Two player with the same name could potentialy join the same game and there scores would be joined on the scoreboard. it is unneccesary an observer have to input a name before being able to view games.
 
   2. The way of handling if a user has reached score 21 is a bit embarrasing and hard to grasp. 
 
