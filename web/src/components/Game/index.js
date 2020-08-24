@@ -48,8 +48,10 @@ function Game() {
         break;
       case "winner":
         setWinner(payload);
+        if(game.isPlayer){
         setIsJoined(false);
         setScoreBoard(undefined);
+        }
         break;
       case "error":
         console.error(data);

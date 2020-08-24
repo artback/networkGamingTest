@@ -18,42 +18,50 @@ func GameLoop(gs *GameService, c config.Configuration, seed int64) {
 		time.Sleep(sleep)
 		if c.MinimumPlayer <= len(gs.players) {
 			log.Print("New game started with ", len(gs.players), " players")
-			board, err := gs.startGame(c, seed)
+			board, winner, err := gs.startGame(c, seed)
 			if err != nil {
 				log.Print("StartGame", err)
 			}
 			log.Print("Game ended without errors, winner: ", board.Winner().Name)
 			gs.total = scoreboard.Join(gs.total, *board)
-			for _, p := range gs.players {
-				err := p.WriteMessage("board", board)
-				if err != nil {
-					log.Print("Error writing to ", p.Name, " ", err)
-				}
-				err = p.WriteMessage("total", gs.total)
-				if err != nil {
-					log.Print("Error writing to ", p.Name, " ", err)
-				}
-				err = p.WriteMessage("winner", board.Winner())
-				if err != nil {
-					log.Print("Error writing to ", p.Name, " ", err)
-				}
+			if winner == nil {
+				winner = board.Winner()
 			}
-			for _, o := range gs.observers {
-				err := o.WriteMessage("board", board)
-				if err != nil {
-					log.Print("Error writing to ", o.Name, " ", err)
-				}
-				err = o.WriteMessage("total", gs.total)
-				if err != nil {
-					log.Print("Error writing to ", o.Name, " ", err)
-				}
-				err = o.WriteMessage("winner", board.Winner())
-				if err != nil {
-					log.Print("Error writing to ", o.Name, " ", err)
-				}
-			}
+			gs.announceResult(board, winner)
 			gs.Clean()
 		}
 		gs.PingPlayers()
 	}
+}
+
+func (gs *GameService) announceResult(board *scoreboard.Scoreboard, winner *scoreboard.Result) {
+	for _, p := range gs.players {
+		err := p.WriteMessage("result", board)
+		if err != nil {
+			log.Print("Error writing to ", p.Name, " ", err)
+		}
+		err = p.WriteMessage("total", gs.total)
+		if err != nil {
+			log.Print("Error writing to ", p.Name, " ", err)
+		}
+		err = p.WriteMessage("winner", winner)
+		if err != nil {
+			log.Print("Error writing to ", p.Name, " ", err)
+		}
+	}
+	for _, o := range gs.observers {
+		err := o.WriteMessage("result", board)
+		if err != nil {
+			log.Print("Error writing to ", o.Name, " ", err)
+		}
+		err = o.WriteMessage("total", gs.total)
+		if err != nil {
+			log.Print("Error writing to ", o.Name, " ", err)
+		}
+		err = o.WriteMessage("winner", winner)
+		if err != nil {
+			log.Print("Error writing to ", o.Name, " ", err)
+		}
+	}
+
 }

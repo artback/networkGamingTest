@@ -27,7 +27,7 @@ func NewGameService() *GameService {
 }
 
 // Runs one game , keeps track of score and sends updates to players
-func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboard.Scoreboard, error) {
+func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboard.Scoreboard, *scoreboard.Result, error) {
 	gs.started = true
 	defer func() {
 		gs.started = false
@@ -36,7 +36,7 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 	board := &scoreboard.Scoreboard{}
 	sleep, err := time.ParseDuration(c.Sleep)
 	if err != nil {
-		return board, ParseDurationError
+		return board, nil, ParseDurationError
 	}
 	g := game.NewGame(c.Rounds, seed, sleep, [2]int{c.BeginInterval, c.EndInterval})
 	resChan := make(chan int)
@@ -46,17 +46,20 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 		select {
 		case result, ok := <-resChan:
 			if !ok {
-				return board, nil
+				return board, nil, nil
 			}
 			err := gs.addToScoreBoard(result, board)
+			if res := board.Have21(); res != nil {
+				return board, res, nil
+			}
 			if err != nil {
-				return board, err
+				return board, nil, err
 			}
 		case err := <-errChan:
-			return board, err
+			return board, nil, err
 		}
 	}
-	return board, nil
+	return board, nil, nil
 }
 func (gs *GameService) addToScoreBoard(result int, scoreboard *scoreboard.Scoreboard) error {
 	if scoreboard != nil {
