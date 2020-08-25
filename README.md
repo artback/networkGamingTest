@@ -46,6 +46,16 @@ Testing:
  The frontend components styling is tested using storybook, run command npm run storybook in the web folder.
 
 
+API endpoint:
+  "/config" GET:
+    Returns the game configuration
+  "/ws" Websocket:
+    Returns the game result,winner and total scores.
+
+    messsages : 
+    {type: "winner,payload: {...}
+  
+
 # TODO
 
   1. Two player with the same name could potentially join the same game and there scores would be joined on the scoreboard. it is unnecessary an observer have to input a name before being able to view games.
