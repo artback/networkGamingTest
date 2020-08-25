@@ -59,7 +59,6 @@ func (gs *GameService) startGame(c config.Configuration, seed int64) (*scoreboar
 			return board, nil, err
 		}
 	}
-	return board, nil, nil
 }
 func (gs *GameService) addToScoreBoard(result int, scoreboard *scoreboard.Scoreboard) error {
 	if scoreboard != nil {
